@@ -13,6 +13,8 @@ class AllFeedbacks extends Component{
             keys: [],
             reply: '',
             form: false,
+            adminReply: false,
+            replys: [],
         };
     };
     submitReply = (name) => {
@@ -28,11 +30,12 @@ class AllFeedbacks extends Component{
                     }
                 };
             });
-            firebase.database().ref(`/feedbacks/${UID}`).push({reply});
-            this.setState({reply: ''});
+            firebase.database().ref(`/feedbacks/${UID}/`).update({reply});
+            this.setState({reply: '', form: false});
             alert('successfully send...');
         }else{
             alert('Enter Message...');
+            this.setState({form: false});
         };
     };
     toggleForm = () => {
@@ -43,16 +46,26 @@ class AllFeedbacks extends Component{
             let data = snap.val();
             let keys = [];
             let feedbacks = [];
+            let replys = [];
             for(let key in data){
                 console.log(key, ':::', data[key]);
+                let data1 = data[key];
+                for(let key1 in data1){
+                    if(data1[key1]['reply']){
+                        console.log(data1[key1]['reply']);
+                        replys.push(data1[key1]['reply']);
+                    }
+                }
+                console.log(replys);
                 feedbacks.push(data[key]);
                 keys.push(key);
             };
-            this.setState({feedbacks, keys});
+            this.setState({feedbacks, keys, replys});
             // console.log(this.state.feedbacks, this.state.keys);
         });
     };
     render(){
+        console.log(this.state.replys)
         return(
             <Paper style={styles.paper} zDepth={1}>
                 <h1>Feedbacks</h1>
@@ -61,8 +74,9 @@ class AllFeedbacks extends Component{
                     <TableRow>
                         <TableHeaderColumn style={{width: 20}}>ID</TableHeaderColumn>
                         <TableHeaderColumn style={{width: 60}}>Name</TableHeaderColumn>
-                        <TableHeaderColumn style={{width: 200}}>Feedback</TableHeaderColumn>
-                        <TableHeaderColumn>Reply</TableHeaderColumn>                        
+                        <TableHeaderColumn style={{width: 100}}>Feedback</TableHeaderColumn>
+                        <TableHeaderColumn style={{width: 100}}>Admin Reply</TableHeaderColumn>                                                
+                        <TableHeaderColumn style={{width: 200}}>Reply</TableHeaderColumn>                        
                     </TableRow>
                     </TableHeader>
                     <TableBody displayRowCheckbox={false}>
@@ -72,8 +86,9 @@ class AllFeedbacks extends Component{
                                 <TableRow key={index.toString()}>
                             <TableRowColumn style={{width: 20}}>{index + 1}</TableRowColumn>
                             <TableRowColumn style={{width: 60}}>{feedback.name}</TableRowColumn>
-                            <TableRowColumn style={{width: 200,}}>{feedback.feedback}</TableRowColumn>
-                            <TableRowColumn>
+                            <TableRowColumn style={{width: 100}}>{feedback.feedback}</TableRowColumn>
+                            <TableRowColumn style={{width: 100}}>{feedback.reply}</TableRowColumn>                            
+                            <TableRowColumn style={{width: 200}}>
                                 {
                                     this.state.form ? <form onSubmit={(e)=> {e.preventDefault();this.submitReply(feedback.name)}}><TextField
                                     onChange={(e) => this.setState({reply: e.target.value})}
@@ -97,7 +112,7 @@ class AllFeedbacks extends Component{
 };
 const styles = {
     paper: {
-        width: 1000,
+        width: '90%',
         height: 'auto',
         margin: 20,
         textAlign: 'center',

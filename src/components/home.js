@@ -16,7 +16,7 @@ class Home extends Component {
             email: '',
             uid: '',
             open: false,
-            bookParking: false,
+            bookParking: true,
             viewBooking: false,
             feedback: false,
         };
@@ -65,9 +65,9 @@ class Home extends Component {
                     open={this.state.open}
                     onRequestChange={(open) => this.setState({open})}
                 >
-                    <MenuItem onClick={()=> this.setState({bookParking: !this.state.bookParking, viewBooking: false, feedback: false})}>Book Parking</MenuItem>
-                    <MenuItem onClick={()=> this.setState({bookParking: false, viewBooking: true, feedback: false})}>View Booking</MenuItem>
-                    <MenuItem onClick={()=> this.setState({bookParking: false, viewBooking: false, feedback: true})}>Feedback</MenuItem>                
+                    <MenuItem onClick={()=> this.setState({open: false, bookParking: true, viewBooking: false, feedback: false})}>Book Parking</MenuItem>
+                    <MenuItem onClick={()=> this.setState({open: false, bookParking: false, viewBooking: true, feedback: false})}>View Bookings</MenuItem>
+                    <MenuItem onClick={()=> this.setState({open: false, bookParking: false, viewBooking: false, feedback: true})}>Feedback</MenuItem>                
                 </Drawer>
                 <div>
                     {

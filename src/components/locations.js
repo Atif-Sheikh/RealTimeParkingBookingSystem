@@ -39,7 +39,8 @@ class Location extends Component{
                    {
                     this.state.toggleSlot ? <Slots slots={this.state.slots} locationKey={this.state.keys[this.state.index]} areaName={this.state.areaName} address={this.state.address} />
                     : <Paper style={styles.paper} zDepth={3}>
-                    <Table>
+                    <h1 style={{color: '#455A64',}}>Select Parking Area</h1>
+                    <Table style={{background: '#E0F7FA'}}>
                         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                         <TableRow>
                             <TableHeaderColumn style={{width: 20}}>Index</TableHeaderColumn>

@@ -20,7 +20,7 @@ class adminHome extends Component {
             bookParking: false,
             viewBooking: false,
             feedback: false,
-            addLocation: false,
+            addLocation: true,
             accountType: '',
         };
     };
@@ -69,16 +69,16 @@ class adminHome extends Component {
                     open={this.state.open}
                     onRequestChange={(open) => this.setState({open})}
                 >
-                    <MenuItem onClick={()=> this.setState({bookParking: false, viewBooking: false, feedback: false, addLocation: true})}>
+                    <MenuItem onClick={()=> this.setState({open: false, bookParking: false, viewBooking: false, feedback: false, addLocation: true})}>
                         Add Location
                     </MenuItem>                    
-                    <MenuItem onClick={()=> this.setState({bookParking: true, viewBooking: false, feedback: false, addLocation: false})}>
+                    <MenuItem onClick={()=> this.setState({open: false, bookParking: true, viewBooking: false, feedback: false, addLocation: false})}>
                         View Bookings
                     </MenuItem>
-                    <MenuItem onClick={()=> this.setState({bookParking: false, viewBooking: true, feedback: false, addLocation: false})}>
+                    <MenuItem onClick={()=> this.setState({open: false, bookParking: false, viewBooking: true, feedback: false, addLocation: false})}>
                         Users
                     </MenuItem>
-                    <MenuItem onClick={()=> this.setState({bookParking: false, viewBooking: false, feedback: true, addLocation: false})}>
+                    <MenuItem onClick={()=> this.setState({open: false, bookParking: false, viewBooking: false, feedback: true, addLocation: false})}>
                         Feedbacks
                     </MenuItem>                
                 </Drawer>
