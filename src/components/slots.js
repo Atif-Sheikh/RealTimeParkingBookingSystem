@@ -46,10 +46,6 @@ class Slots extends Component{
         }else{
             alert('please enter Correct date!');                        
         }
-        // console.log(input-current);
-        // let miliseconds = input - current;
-        // let hours = Math.floor(miliseconds/(60*60*1000));
-        // console.log(hours);
     };
     slotClick = (index, booking) => {
         const { email, UID, displayName, time, hours, controlledDate } = this.state;
@@ -78,142 +74,126 @@ class Slots extends Component{
         let day = date.getDate();
         let month = date.getMonth();
         let year = date.getFullYear();
-        // let msec = Date.parse(month, day, year); 
+        let today = new Date();
+        let todayDate = today.getDate();
+        let todayMonth = today.getMonth();
+        let todayHours = today.getHours();
+        let todayYear = today.getFullYear();
+        console.log(todayDate, day); 
         console.log(UID, this.props.locationKey);
-        firebase.database().ref(`/bookings/${this.props.locationKey}/`).on('value', snap => {
-            let data = snap.val();
-            let slotKeys = [];
-            let unBook = [];
-            let dbmonth = '';
-            let dbdate = '';
-            let dbyear = '';
-            let dbtime = '';
-            let dbhours = '';
-            for(let key in data){
-                let data2 = data[key];
-                for(let key1 in data2){
-                    console.log(data2[key1]);            
-                    console.log(data[key]);
-                    dbmonth = data2[key1]['month'];
-                    dbdate = data2[key1]['date'];
-                    dbyear = data2[key1]['year'];
-                    dbtime = data2[key1]['time'];
-                    dbhours = data2[key1]['hours'];
-                    console.log(dbmonth, dbdate, dbyear, dbtime, dbhours);
-                }
-                // if(year === dbyear){
-                //     if(month === dbmonth){
-                //         if(day === dbdate){
-                //             if(dbhours+dbtime < time+hours ){
-                //                 console.log(time+hours, dbhours+dbtime, this.props.locationKey, key);
-                //                 // console.log(time+hours, dbhours+dbtime, this.props.locationKey, key2, moreKey, slotNo);                                        
-                //                 // firebase.database().ref(`/locations/${this.props.locationKey}/slots/${key2}/`).update({booking:false});
-                //                 slotKeys.push(key);
-                //             }
-                //         }else if(day > dbdate || day < dbdate){
-                //             slotKeys.push(key);                                    
-                //             // firebase.database().ref(`/locations/${this.props.locationKey}/slots/${key2}/`).update({booking:false});                                                                        
-                //         }else if(day === dbdate || dbtime === time){
-                //             unBook.push(key);                                    
-                //             // firebase.database().ref(`/locations/${this.props.locationKey}/slots/${key2}/`).update({booking:false});                                                                        
-                //         }
-                //     }else if(month > dbmonth){
-                //         slotKeys.push(key);                                
-                //         // firebase.database().ref(`/locations/${this.props.locationKey}/slots/${key2}/`).update({booking:false});                                
-                //     }
-                // }else{console.log('asd')}
-                if(year === dbyear && month === dbmonth && day === dbdate && dbtime === time){
-                    unBook.push(key);
-                }
-                else if(year === dbyear && month === dbmonth && day === dbdate && dbtime+dbhours === time+hours){
-                    console.log('false and push in unbook array');
-                    unBook.push(key);
+        if(todayDate === day && todayMonth === month && year === todayYear){
+            console.log(hours, todayHours);            
+            if(time > todayHours){
+                console.log(hours, todayHours);
+                firebase.database().ref(`/bookings/${this.props.locationKey}/`).on('value', snap => {
+                    let data = snap.val();
+                    let slotKeys = [];
+                    let unBook = [];
+                    let dbmonth = '';
+                    let dbdate = '';
+                    let dbyear = '';
+                    let dbtime = '';
+                    let dbhours = '';
+                    for(let key in data){
+                        let data2 = data[key];
+                        for(let key1 in data2){
+                            console.log(data2[key1]);            
+                            console.log(data[key]);
+                            dbmonth = data2[key1]['month'];
+                            dbdate = data2[key1]['date'];
+                            dbyear = data2[key1]['year'];
+                            dbtime = data2[key1]['time'];
+                            dbhours = data2[key1]['hours'];
+                            console.log(dbmonth, dbdate, dbyear, dbtime, dbhours);
+                        }
+                        if(year === dbyear && month === dbmonth && day === dbdate && dbtime === time){
+                            unBook.push(key);
+                        }
+                        else if(year === dbyear && month === dbmonth && day === dbdate && dbtime+dbhours === time+hours){
+                            console.log('false and push in unbook array');
+                            unBook.push(key);
+                        }else{
+                            console.log('true and push in slotkeys array');
+                            slotKeys.push(key);
+                        }
+                    }
+                    if(slotKeys.length !== 0){
+                        console.log(slotKeys);                                    
+                        for(var i=0; i < slotKeys.length; i++){
+                            firebase.database().ref(`/locations/${this.props.locationKey}/slots/${slotKeys[i]}/`).update({booking:false});
+                            console.log(slotKeys[i]);
+                        };
+                    }
+                    if(unBook){
+                        console.log(unBook);
+                        for(var j=0; j < unBook.length; j++){
+                            firebase.database().ref(`/locations/${this.props.locationKey}/slots/${unBook[j]}/`).update({booking:true});
+                            console.log(unBook[j]);
+                        };
+                    }
+                });
+                if(time && hours && controlledDate){
+                    this.setState({toggleSlots: true});
                 }else{
-                    console.log('true and push in slotkeys array');
-                    slotKeys.push(key);
-                }
-            }
-            if(slotKeys.length !== 0){
-                console.log(slotKeys);                                    
-                for(var i=0; i < slotKeys.length; i++){
-                    firebase.database().ref(`/locations/${this.props.locationKey}/slots/${slotKeys[i]}/`).update({booking:false});
-                    console.log(slotKeys[i]);
+                    alert('Please enter time and date!');
                 };
+            }else{
+                alert('Please select Correct Time...');
             }
-            if(unBook){
-                console.log(unBook);
-                for(var j=0; j < unBook.length; j++){
-                    firebase.database().ref(`/locations/${this.props.locationKey}/slots/${unBook[j]}/`).update({booking:true});
-                    console.log(unBook[j]);
-                };
-            }
-            // for(let key in data){
-            //     let moreData = data[key];
-            //     for(let moreKey in moreData){
-            //         let moreAndMore = moreData[moreKey];
-            //         for(let key2 in moreAndMore){
-            //             // console.log(moreAndMore[key2], key2);
-            //             let dbmonth = moreAndMore[key2]['month'];
-            //             let dbdate = moreAndMore[key2]['date'];
-            //             let dbyear = moreAndMore[key2]['year'];
-            //             let dbtime = moreAndMore[key2]['time'];
-            //             let dbhours = moreAndMore[key2]['hours'];
-            //             let slotNo = moreAndMore[key2]['slot'];
-            //             // let dbmsec = Date.parse(dbmonth, dbdate, dbyear);
-            //             if(year === dbyear){
-            //                 if(month == dbmonth){
-            //                     if(day == dbdate){
-            //                         if(dbhours+dbtime <= time+hours ){
-            //                             console.log(time+hours, dbhours+dbtime, this.props.locationKey, key2, slotNo);
-            //                             // console.log(time+hours, dbhours+dbtime, this.props.locationKey, key2, moreKey, slotNo);                                        
-            //                             // firebase.database().ref(`/locations/${this.props.locationKey}/slots/${key2}/`).update({booking:false});
-            //                             slotKeys.push(key2);
-            //                         }
-            //                     }else if(day > dbdate){
-            //                         slotKeys.push(key2);                                    
-            //                         // firebase.database().ref(`/locations/${this.props.locationKey}/slots/${key2}/`).update({booking:false});                                                                        
-            //                     }
-            //                 }else if(month > dbmonth){
-            //                     slotKeys.push(key2);                                
-            //                     // firebase.database().ref(`/locations/${this.props.locationKey}/slots/${key2}/`).update({booking:false});                                
-            //                 }
-            //             }
-            //         }
-                    // if(slotKeys){
-                    //     console.log(slotKeys);                                    
-                    //     for(var i=0; i < slotKeys.length; i++){
-                    //         console.log(slotKeys[i]);
-                    //         // firebase.database().ref(`/locations/${this.props.locationKey}/slots/${slotKeys[i]}/`).update({booking:false});
-                    //     };
-                    // }
-        //             if(moreData[moreKey] === true){
-        //                 // console.log(moreData, moreKey);
-        //                 let moreAndMore = moreData;
-        //                 for(let moreAndMoreKey in moreAndMore){
-        //                     if(moreAndMoreKey !== 'booking'){
-        //                         // console.log(moreAndMore[moreAndMoreKey]['date']);
-        //                         let dbmonth = moreAndMore[moreAndMoreKey]['month'];
-        //                         let dbdate = moreAndMore[moreAndMoreKey]['date'];
-        //                         let dbyear = moreAndMore[moreAndMoreKey]['year'];
-        //                         let dbtime = moreAndMore[moreAndMoreKey]['time'];
-        //                         // let dbhours = moreAndMore[moreAndMoreKey]['hours'];
-        //                         let dbmsec = Date.parse(dbmonth, dbdate, dbyear);
-        //                         if(msec > dbmsec || time > dbtime){
-        //                             firebase.database().ref(`/locations/${this.props.locationKey}/slots/${key}`).update({booking: false});
-        //                         }else{
-        //                             console.log('already bOOked', dbmsec , dbtime);
-        //                         }                                                                                        
-        //                     }
-        //                 }
-                    // }
-        //         }
-        //     };
-        });
-        if(time && hours && controlledDate){
-            this.setState({toggleSlots: true});
         }else{
-            alert('Please enter time and date!');
-        };
+            firebase.database().ref(`/bookings/${this.props.locationKey}/`).on('value', snap => {
+                let data = snap.val();
+                let slotKeys = [];
+                let unBook = [];
+                let dbmonth = '';
+                let dbdate = '';
+                let dbyear = '';
+                let dbtime = '';
+                let dbhours = '';
+                for(let key in data){
+                    let data2 = data[key];
+                    for(let key1 in data2){
+                        console.log(data2[key1]);            
+                        console.log(data[key]);
+                        dbmonth = data2[key1]['month'];
+                        dbdate = data2[key1]['date'];
+                        dbyear = data2[key1]['year'];
+                        dbtime = data2[key1]['time'];
+                        dbhours = data2[key1]['hours'];
+                        console.log(dbmonth, dbdate, dbyear, dbtime, dbhours);
+                    }
+                    if(year === dbyear && month === dbmonth && day === dbdate && dbtime === time){
+                        unBook.push(key);
+                    }
+                    else if(year === dbyear && month === dbmonth && day === dbdate && dbtime+dbhours === time+hours){
+                        console.log('false and push in unbook array');
+                        unBook.push(key);
+                    }else{
+                        console.log('true and push in slotkeys array');
+                        slotKeys.push(key);
+                    }
+                }
+                if(slotKeys.length !== 0){
+                    console.log(slotKeys);                                    
+                    for(var i=0; i < slotKeys.length; i++){
+                        firebase.database().ref(`/locations/${this.props.locationKey}/slots/${slotKeys[i]}/`).update({booking:false});
+                        console.log(slotKeys[i]);
+                    };
+                }
+                if(unBook){
+                    console.log(unBook);
+                    for(var j=0; j < unBook.length; j++){
+                        firebase.database().ref(`/locations/${this.props.locationKey}/slots/${unBook[j]}/`).update({booking:true});
+                        console.log(unBook[j]);
+                    };
+                }
+            });
+            if(time && hours && controlledDate){
+                this.setState({toggleSlots: true});
+            }else{
+                alert('Please enter time and date!');
+            };
+        }
     };
     componentDidMount(){
         const current = new Date();
@@ -228,8 +208,6 @@ class Slots extends Component{
             this.setState({controlledDate: current ,UID, email, displayName});
         });
         firebase.database().ref(`/locations/${this.props.locationKey}/slots`).on('value', snap => {
-            // console.log(snap.val());
-
             let data = snap.val();
             let slots = [];
             for(let key in data){
@@ -237,9 +215,6 @@ class Slots extends Component{
             };
             this.setState({slots});
         });
-        // console.log(current.getDate(),  current.getMonth(), current.getFullYear());
-        // let days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-        // let months = ['january', 'fedruary', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
     };
     render(){
         // console.log(this.props.locationKey);
@@ -252,7 +227,7 @@ class Slots extends Component{
                         <h1 style={{color: '#424242'}}>Select Timing</h1>
                         <div style={{width: '85%', height: '100px', position: 'relative', left: '50px'}}>
                             <span className='row'>
-                                <DatePicker style={{float: 'left'}} floatingLabelText='Select parking Date' 
+                                <DatePicker style={{float: 'left'}} autoOk={true} floatingLabelText='Select parking Date' 
                                     value={this.state.controlledDate}
                                     onChange={this.dateChange}
                                 />
