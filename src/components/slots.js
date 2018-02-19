@@ -123,6 +123,9 @@ class Slots extends Component{
                 //     }
                 // }else{console.log('asd')}
                 if(year === dbyear && month === dbmonth && day === dbdate && dbtime === time){
+                    unBook.push(key);
+                }
+                else if(year === dbyear && month === dbmonth && day === dbdate && dbtime+dbhours === time+hours){
                     console.log('false and push in unbook array');
                     unBook.push(key);
                 }else{
@@ -133,15 +136,15 @@ class Slots extends Component{
             if(slotKeys.length !== 0){
                 console.log(slotKeys);                                    
                 for(var i=0; i < slotKeys.length; i++){
-                    console.log(slotKeys[i]);
                     firebase.database().ref(`/locations/${this.props.locationKey}/slots/${slotKeys[i]}/`).update({booking:false});
+                    console.log(slotKeys[i]);
                 };
             }
             if(unBook){
                 console.log(unBook);
                 for(var j=0; j < unBook.length; j++){
-                    console.log(unBook[i]);
                     firebase.database().ref(`/locations/${this.props.locationKey}/slots/${unBook[j]}/`).update({booking:true});
+                    console.log(unBook[j]);
                 };
             }
             // for(let key in data){

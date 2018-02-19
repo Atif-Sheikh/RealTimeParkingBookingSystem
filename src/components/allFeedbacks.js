@@ -50,12 +50,12 @@ class AllFeedbacks extends Component{
             for(let key in data){
                 console.log(key, ':::', data[key]);
                 let data1 = data[key];
-                for(let key1 in data1){
+                for(var key1 in data1){
+                }
                     if(data1[key1]['reply']){
                         console.log(data1[key1]['reply']);
                         replys.push(data1[key1]['reply']);
                     }
-                }
                 console.log(replys);
                 feedbacks.push(data[key]);
                 keys.push(key);

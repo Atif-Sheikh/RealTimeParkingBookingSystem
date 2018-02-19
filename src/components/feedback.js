@@ -21,7 +21,7 @@ class Feedback extends Component{
         if(this.state.feedback){
             firebase.database().ref(`/feedbacks/${this.props.UID}`).set({name: this.props.name, feedback: this.state.feedback})
                 .then(()=>{
-                    this.setState({successfully: 'Successfully Send'});
+                    this.setState({successfully: 'Successfully Send', feedback: ''});
                 });
         }else{
             this.setState({error: 'please enter text...'});
@@ -32,13 +32,14 @@ class Feedback extends Component{
             let data = snap.val();
             let reply = '';
             if(data){
-                for(let key in data){
-                    console.log(data[key]['reply']);
-                    if(data[key]['reply']){
-                        reply = data[key]['reply'];
+                // for(let key in data){
+                    console.log(data['reply']);
+                    if(data['reply']){
+                        reply = data['reply'];
+                        console.log(reply);
                         this.setState({adminReply: true, reply: reply})
-                        break;
-                    }    
+                        // break;
+                    // }    
                 }
             }
         });
@@ -49,8 +50,8 @@ class Feedback extends Component{
                 <h1>Feedback</h1>
                 <form onSubmit={this.submitButton}>
                     <TextField
-                        defaultValue={this.state.feedback}
                         onChange={(e)=> this.setState({feedback: e.target.value, error: ''})}
+                        value={this.state.feedback}
                         floatingLabelText="Feedback..."
                     /><br />
                     <span><p style={styles.error}>{this.state.error}</p><p style={styles.successfully}>{this.state.successfully}</p></span>
