@@ -94,20 +94,24 @@ class Bookings extends Component{
         if(this.props.accountType === 'admin'){
             firebase.database().ref(`/bookings`).on('value', snap => {
                 let data = snap.val();
-                let keys = [];
-                let values = [];
-                for(let key in data){
-                    let moreData = data[key];
-                    for(let key in moreData){
-                        let moreAndMoreData = moreData[key];
-                        for(let key in moreAndMoreData){
-                            // console.log(moreAndMoreData[key]);
-                            values.push(moreAndMoreData[key]);
-                            keys.push(key);
-                        }
+                if(data){
+                    let keys = [];
+                    let values = [];
+                    for(let key in data){
+                        let moreData = data[key];
+                        for(let key in moreData){
+                            let moreAndMoreData = moreData[key];
+                            for(let key in moreAndMoreData){
+                                // console.log(moreAndMoreData[key]);
+                                values.push(moreAndMoreData[key]);
+                                keys.push(key);
+                            }
+                        };
                     };
-                };
-                this.setState({keys, values});
+                    this.setState({keys, values});
+                }else{
+                    this.setState({noBooking: true});
+                }
             });
         }else{
             firebase.auth().onAuthStateChanged((user) => {
@@ -159,7 +163,7 @@ class Bookings extends Component{
         return(
             <div>
                 {
-                    this.state.noBooking ? <Paper style={{background: '#00BCD4', height: '100px', lineHeight: '100px', marginTop: '150px'}} zDepth={3}><h1>You have No booking Yet!</h1></Paper> 
+                    this.state.noBooking ? <Paper style={{background: '#00BCD4', height: '100px', lineHeight: '100px', marginTop: '150px'}} zDepth={3}><h1>You have No booking Yet...</h1></Paper> 
                     : <Paper style={styles.paper} zDepth={3}>
                     <Table style={{background: '#E0F7FA',}}>
                         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
